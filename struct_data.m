@@ -1,7 +1,8 @@
 function data_struct = struct_data(file_name)
-% Descriptio : Helper function to arrange the data for MLP net
+% Description : Helper function to arrange the data for MLP net
 % Loading the file, to convert into categorical data 
 data_struct = load(file_name);
+setdemorandstream(672880951);
 
 %Catgorizing the chest pain column
 x2 = categorical(data_struct.x(:,3));
@@ -43,7 +44,7 @@ data_struct.t = dummyvar(t1);
 full_data = [data_struct.x, data_struct.t];
 
 % dividing the data for training, testing and validation
-[trainInd,valInd,testInd] = dividerand(full_data',75,15,15);
+[trainInd,valInd,testInd] = dividerand(full_data',85,15,15);
 
 % Rearraging the data for network input
 data_struct.input_count = size(data_struct.x,2);
