@@ -59,6 +59,3 @@ legend("No disease","Mild Heart disease","Severe heart disease")
 title("Chest pain vs Heart disease")
 xlabel("Chest pain")
 ylabel("count")
-
-figure(2)
-corrplot(data)
