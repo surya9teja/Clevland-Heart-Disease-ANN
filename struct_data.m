@@ -4,6 +4,13 @@ function data_struct = struct_data(file_name)
 data_struct = load(file_name);
 setdemorandstream(672880951);
 
+% Standardising the data
+
+x(:,4) = x(:,4)/max(x(:,4));
+x(:,5) = x(:,5)/max(x(:,5));
+x(:,8) = x(:,4)/max(x(:,8));
+x(:,10) = x(:,4)/max(x(:,10));
+
 %Catgorizing the chest pain column
 x2 = categorical(data_struct.x(:,3));
 categories(x2);
