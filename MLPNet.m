@@ -14,40 +14,40 @@ classdef MLPNet < handle
 %   momentum: none, regular, ADAM, Nesterov
 %   annealing: none, step, exponential, 1/t
 % 
-    % Define class parameters
+% Define class parameters
    
     properties (Access = public)
-        Layers = {};        % cell containing number of nodes in each layer
-        Weights = {};       % cell containing weights between layers
-        Nets = {};          % cell containing network outputs               
-        H = {};             % cell containing output activations
-        Act_Fun = {};       % cell containing activation function
-        lossfun = 'rmse';       % Default Loss Function
-        trainable = true;    % boolean for trainability
-        NL=0;                % Number of layers in network
+        Layers = {};                % cell containing number of nodes in each layer
+        Weights = {};               % cell containing weights between layers
+        Nets = {};                  % cell containing network outputs               
+        H = {};                     % cell containing output activations
+        Act_Fun = {};               % cell containing activation function
+        lossfun = 'rmse';           % Default Loss Function
+        trainable = true;           % boolean for trainability
+        NL=0;                       % Number of layers in network
         regularization = 'none';    % Defaault Regularization Methods
         momentum = 'adam';          % Default Type of momentum
         annealing = 'none';         % Default Type of annealing
         rate = 0.0005;              % Default Learning Rate
-        net_bias = [];      % Bias node applied to each network
-        dropout = 1;        % Default dropout rate
-        mask = {};          % Dropout mask 
+        net_bias = [];              % Bias node applied to each network
+        dropout = 1;                % Default dropout rate
+        mask = {};                  % Dropout mask 
     end
     
     properties (Constant)
-        mu = 0.5;           % For regular/Nesterov momentum
-        beta1 = 0.9;        % For ADAM
-        beta2 = 0.99;       % For ADAM
-        eps = 1E-8;         % For ADAM
-        alpha = 0.01;       % For LeakyRelu
-        lambda = 1E-6;      % Regularization Parameter
+        mu = 0.5;                   % For regular/Nesterov momentum
+        beta1 = 0.9;                % For ADAM
+        beta2 = 0.99;               % For ADAM
+        eps = 1E-8;                 % For ADAM
+        alpha = 0.01;               % For LeakyRelu
+        lambda = 1E-6;              % Regularization Parameter
     end
     
     properties (Access = private)
-        m = {};             % ADAM parameters
-        v = {};             % ADAM parameters
-        v_prev = {};        % ADAM parameters
-        init = [];          % ADAM parameters
+        m = {};                     % ADAM parameters
+        v = {};                     % ADAM parameters
+        v_prev = {};                % ADAM parameters
+        init = [];                  % ADAM parameters
     end
     
     % Define class methods
@@ -316,7 +316,7 @@ classdef MLPNet < handle
             % Output estimate
             Y_hat = obj.H{end}; 
         end
-        function Y_hat = test(obj, X)
+        function Y_hat = test(obj, X, wei, bai)
             % Description: predict output (no dropout)
             % INPUTS:
             %   obj: class handle
@@ -325,7 +325,8 @@ classdef MLPNet < handle
             % OUTPUTS: 
             %   Y_hat: predicted output
             obj.H{1} = X;
-            
+            obj.Weights = wei;
+            obj.net_bias = bai;
             %--------------------------------------------------------------
             % Feedforward to get net outputs and activation for all layers
             %--------------------------------------------------------------
@@ -552,7 +553,7 @@ classdef MLPNet < handle
         end
         
         % Function for computing error/accuracy metrics
-        function [ERROR,CE,ACC] = NetworkError(obj,X,Y,type)
+        function [ERROR,CE,ACC, Wt, bi] = NetworkError(obj,X,Y,type)
             % Description: This function computes the network error (and
             % classification error/accuracy for classification problems)
             %
@@ -567,15 +568,18 @@ classdef MLPNet < handle
             % ACC: classification accuracy [1x1 scalar]
  
             n_data = size(X,1);
+            Wt = obj.Weights;
+            bi = obj.net_bias;
             
             % add bias node to input if input layer has bias
             if obj.net_bias{1}
                 X = horzcat(X, ones(n_data,1));
             end
             
-            Y_hat = obj.test(X);
+            Y_hat = obj.test(X,Wt,bi);
             % compute error
             [~,output_count] = size(Y);
+            
             
             switch obj.lossfun
                 case 'rmse'

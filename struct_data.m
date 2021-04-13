@@ -1,15 +1,18 @@
 function data_struct = struct_data(file_name)
 % Description : Helper function to arrange the data for MLP net
+
 % Loading the file, to convert into categorical data 
 data_struct = load(file_name);
+
+% To avoid the randomness of initilizations,...
+% the random seed is set to reproduce the same results every time.
 setdemorandstream(672880951);
 
 % Standardising the data
-
-x(:,4) = x(:,4)/max(x(:,4));
-x(:,5) = x(:,5)/max(x(:,5));
-x(:,8) = x(:,4)/max(x(:,8));
-x(:,10) = x(:,4)/max(x(:,10));
+data_struct.x(:,4) = data_struct.x(:,4)/max(data_struct.x(:,4));
+data_struct.x(:,5) = data_struct.x(:,5)/max(data_struct.x(:,5));
+data_struct.x(:,8) = data_struct.x(:,4)/max(data_struct.x(:,8));
+data_struct.x(:,10) = data_struct.x(:,4)/max(data_struct.x(:,10));
 
 %Catgorizing the chest pain column
 x2 = categorical(data_struct.x(:,3));
@@ -51,7 +54,7 @@ data_struct.t = dummyvar(t1);
 full_data = [data_struct.x, data_struct.t];
 
 % dividing the data for training, testing and validation
-[trainInd,valInd,testInd] = dividerand(full_data',85,15,15);
+[trainInd,valInd,testInd] = dividerand(full_data',70,15,15);
 
 % Rearraging the data for network input
 data_struct.input_count = size(data_struct.x,2);
@@ -66,16 +69,7 @@ data_struct.validation.input = valInd(1:end-3,:);
 data_struct.validation.output = valInd(end-2:end,:);
 data_struct.validation_count = length(data_struct.validation.input);
 
-data_struct.training.bias_i = ones(data_struct.training_count, 1);
-data_struct.validation.bias_i = ones(data_struct.validation_count, 1);
-data_struct.test.bias_i = ones(data_struct.test_count, 1);
-data_struct.training.bias_o = ones(data_struct.training_count, 1);
-data_struct.validation.bias_o = ones(data_struct.validation_count, 1);
-data_struct.test.bias_o = ones(data_struct.test_count, 1);
+% Storing count values into objects
 data_struct.training.count = data_struct.training_count;
 data_struct.validation.count = data_struct.validation_count;
 data_struct.test.count = data_struct.test_count;
-% save('heart_disease_cat.mat', 'data_struct');
-% save('heart_disease_cat.mat','data_struct.input_count','data_struct.output_count','data_struct.test.input'...
-%     ,'data_struct.test.output','data_struct.test_count','data_struct.training.input','data_struct.training.output'...
-%     ,'data_struct.training_count','data_struct.validation.input','data_struct.validation.output','data_struct.validation_count');
